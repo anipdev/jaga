@@ -1,33 +1,63 @@
 package controllers
 
 import (
-	"encoding/json"
 	"jaga/dto"
 	"jaga/services"
 	"jaga/utils"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func Login(w http.ResponseWriter, r *http.Request) {
+type AuthController struct {
+	UserService services.UserService
+}
+
+func NewAuthController(userService services.UserService) *AuthController {
+	return &AuthController{UserService: userService}
+}
+
+func (ctrl *AuthController) Login(c *gin.Context) {
 	var req dto.LoginRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Bad Request",
+		})
 		return
 	}
 
-	user, err := services.Authenticate(req.Email, req.Password)
+	user, err := ctrl.UserService.GetUserByEmail(req.Email)
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Invalid credentials"})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to retrieve user",
+		})
+		return
+	}
+
+	if err := utils.ComparePassword(user.PasswordHash, req.Password); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Invalid credentials",
+		})
 		return
 	}
 
 	token, err := utils.GenerateJWT(user.ID, user.Role)
 	if err != nil {
-		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to generate token",
+		})
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"token": token,
+	c.JSON(http.StatusOK, dto.LoginResponse{
+		Token: token,
 	})
 }

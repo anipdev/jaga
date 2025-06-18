@@ -1,22 +1,27 @@
 package routes
 
 import (
+	"jaga/config"
+	"jaga/consts"
 	"jaga/controllers"
 	"jaga/middleware"
+	"jaga/repositories"
+	"jaga/services"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes() *mux.Router {
-	r := mux.NewRouter()
+func RegisterRoutes() *gin.Engine {
+	r := gin.Default()
 
-	r.HandleFunc("/login", controllers.Login).Methods("POST")
+	userRepositories := repositories.NewUserRepository(config.DB)
+	userService := services.NewUserService(userRepositories)
+	userController := controllers.NewUserController(userService)
+	authController := controllers.NewAuthController(userService)
 
-	r.HandleFunc("/users", middleware.RequireRole("super_user", "admin")(controllers.CreateUser)).Methods("POST")
+	r.POST("/login", authController.Login)
 
-	r.HandleFunc("/assets",
-		middleware.RequireRole("super_user", "admin")(controllers.CreateAsset),
-	).Methods("POST")
+	r.POST("/users", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.CreateUser)
 
 	return r
 }

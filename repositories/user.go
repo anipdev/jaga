@@ -1,24 +1,35 @@
 package repositories
 
 import (
-	"errors"
-	"jaga/config"
 	"jaga/models"
+
+	"gorm.io/gorm"
 )
 
-func GetUserByEmail(email string) (*models.User, error) {
-	var user models.User
-	result := config.DB.First(&user, "email = ?", email)
-	if result.Error != nil {
-		return nil, errors.New("user not found")
+type UserRepository interface {
+	GetUserByEmail(email string) (*models.User, error)
+	CreateUser(user *models.User) (*models.User, error)
+}
 
+type userRepository struct {
+	db *gorm.DB
+}
+
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return &userRepository{db: db}
+}
+
+func (r *userRepository) GetUserByEmail(email string) (*models.User, error) {
+	var user models.User
+	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
 	}
 	return &user, nil
 }
 
-func CreateUser(user *models.User) error {
-	if err := config.DB.Create(user).Error; err != nil {
-		return errors.New("failed to create user")
+func (r *userRepository) CreateUser(user *models.User) (*models.User, error) {
+	if err := r.db.Create(user).Error; err != nil {
+		return nil, err
 	}
-	return nil
+	return user, nil
 }

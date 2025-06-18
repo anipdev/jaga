@@ -2,81 +2,49 @@ package services
 
 import (
 	"errors"
-	"fmt"
-	"log"
-	"os"
 
-	"jaga/dto"
 	"jaga/models"
 	"jaga/repositories"
+	"jaga/utils"
 
-	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
-func SeedSuperUser() {
-	email := os.Getenv("SUPERUSER_EMAIL")
-	password := os.Getenv("SUPERUSER_PASSWORD")
-	name := os.Getenv("SUPERUSER_NAME")
-
-	existing, err := repositories.GetUserByEmail(email)
-	if err == nil && existing != nil {
-		return
-	}
-
-	if (email == "" || password == "" || name == "") && existing == nil {
-		log.Fatal("SUPERUSER credentials are missing. Please set SUPERUSER_EMAIL, SUPERUSER_PASSWORD, and SUPERUSER_NAME in .env.")
-	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		log.Fatal("Failed to hash password")
-	}
-
-	superUser := models.User{
-		ID:           uuid.New().String(),
-		Name:         name,
-		Email:        email,
-		PasswordHash: string(hashedPassword),
-		Role:         "super_user",
-	}
-
-	if err := repositories.CreateUser(&superUser); err != nil {
-		log.Fatal("Failed to create super user")
-	}
-
-	log.Println("Super user created")
+type UserService interface {
+	CreateUser(user *models.User, creatorRole string) (*models.User, error)
+	GetUserByEmail(email string) (*models.User, error)
 }
 
-func CreateUser(input dto.CreateUserRequest, userRole string) error {
-	isAllowed := false
-	switch userRole {
-	case "super_user":
-		isAllowed = input.Role == "admin" || input.Role == "manager" || input.Role == "technician"
-	case "admin":
-		isAllowed = input.Role == "manager" || input.Role == "technician"
-	}
-	if !isAllowed {
-		return fmt.Errorf("%s is not allowed to create %s", userRole, input.Role)
+type userService struct {
+	userRepo repositories.UserRepository
+}
+
+func NewUserService(userRepo repositories.UserRepository) UserService {
+	return &userService{userRepo: userRepo}
+}
+
+func (s *userService) GetUserByEmail(email string) (*models.User, error) {
+	return s.userRepo.GetUserByEmail(email)
+}
+
+func (s *userService) CreateUser(user *models.User, creatorRole string) (*models.User, error) {
+	if creatorRole == "admin" && user.Role == "admin" {
+		return nil, errors.New("admin cannot create a user with 'admin' role")
 	}
 
-	existingUser, err := repositories.GetUserByEmail(input.Email)
-	if err == nil && existingUser.ID != "" {
-		return errors.New("email is already exists")
+	_, err := s.userRepo.GetUserByEmail(user.Email)
+	if err == nil {
+		return nil, errors.New("email already registered")
+	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	hashedPassword, err := utils.HashPassword(user.PasswordHash)
 	if err != nil {
-		return errors.New("failed to hash password")
+		return nil, errors.New("failed to hash password")
 	}
+	user.PasswordHash = hashedPassword
 
-	user := models.User{
-		ID:           uuid.New().String(),
-		Name:         input.Name,
-		Email:        input.Email,
-		PasswordHash: string(hashedPassword),
-		Role:         input.Role,
-	}
-
-	return repositories.CreateUser(&user)
+	return s.userRepo.CreateUser(user)
 }

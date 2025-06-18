@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"jaga/models"
 	"log"
 	"os"
 
@@ -12,7 +13,7 @@ import (
 
 var DB *gorm.DB
 
-func InitDB() {
+func InitDB() *gorm.DB {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -25,10 +26,24 @@ func InitDB() {
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_NAME"))
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to database: ", err)
 	}
 
-	DB = db
+	return DB
+}
+
+func AutoMigrate(db *gorm.DB) {
+	err := db.AutoMigrate(
+		&models.User{},
+		&models.AssetCategory{},
+		&models.Asset{},
+		&models.MaintenanceSchedule{},
+		&models.MaintenanceRecord{},
+	)
+	if err != nil {
+		log.Fatalf("Failed to auto migrate database: %v", err)
+	}
+	fmt.Println("Database migrated successfully!")
 }
