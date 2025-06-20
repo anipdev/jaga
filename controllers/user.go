@@ -236,7 +236,7 @@ func (ctrl *UserController) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, dto.DeleteUserResponse{
+	c.JSON(http.StatusOK, dto.DeleteUserResponse{
 		Message: "User deleted successfully!",
 	})
 

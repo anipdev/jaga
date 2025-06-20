@@ -6,9 +6,6 @@ type UserDTO struct {
 	Email string `json:"email"`
 	Role  string `json:"role"`
 }
-type GetUserByIDRequest struct {
-	ID string `json:"id" binding:"required"`
-}
 
 type GetUserByIDResponse struct {
 	Message string  `json:"message"`
@@ -53,10 +50,6 @@ type UpdateUserRequest struct {
 type UpdateUserResponse struct {
 	Message string  `json:"message"`
 	User    UserDTO `json:"user"`
-}
-
-type DeleteUserRequest struct {
-	ID string `json:"id" binding:"required"`
 }
 
 type DeleteUserResponse struct {
