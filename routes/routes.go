@@ -14,18 +14,18 @@ import (
 func RegisterRoutes() *gin.Engine {
 	r := gin.Default()
 
-	authController := controllers.NewAuthController(userService)
-
 	userRepositories := repositories.NewUserRepository(config.DB)
 	userService := services.NewUserService(userRepositories)
 	userController := controllers.NewUserController(userService)
+
+	authController := controllers.NewAuthController(userService)
 
 	assetCategoryRepository := repositories.NewAssetCategoryRepository(config.DB)
 	assetCategoryService := services.NewAssetCategoryService(assetCategoryRepository)
 	assetCategoryController := controllers.NewAssetCategoryController(assetCategoryService)
 
 	assetRepository := repositories.NewAssetRepository(config.DB)
-	assetService := services.NewAssetService(assetRepository)
+	assetService := services.NewAssetService(assetRepository, assetCategoryRepository)
 	assetController := controllers.NewAssetController(assetService)
 
 	v1 := r.Group("/v1")

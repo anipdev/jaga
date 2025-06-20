@@ -10,8 +10,7 @@ type CreateAssetCategoryRequest struct {
 }
 
 type CreateAssetCategoryResponse struct {
-	Message       string           `json:"message"`
-	AssetCategory AssetCategoryDTO `json:"asset_category"`
+	Message string `json:"message"`
 }
 
 type GetAssetCategoryByIDResponse struct {
@@ -22,7 +21,7 @@ type GetAssetCategoryByIDResponse struct {
 type GetAssetCategoriesRequest struct {
 	Page         int    `json:"page" binding:"omitempty,min=1"`
 	ItemsPerPage int    `json:"items_per_page" binding:"omitempty,min=1"`
-	SortBy       string `json:"sort_by" binding:"omitempty,oneof=id name created_at updated_at"` // Adjust sortable fields
+	SortBy       string `json:"sort_by" binding:"omitempty,oneof=id name created_at updated_at"`
 	SortDir      string `json:"sort_dir" binding:"omitempty,oneof=asc desc"`
 }
 
@@ -41,11 +40,9 @@ type UpdateAssetCategoryRequest struct {
 }
 
 type UpdateAssetCategoryResponse struct {
-	Message       string           `json:"message"`
-	AssetCategory AssetCategoryDTO `json:"asset_category"`
+	Message string `json:"message"`
 }
 
 type DeleteAssetCategoryResponse struct {
-	Message         string `json:"message"`
-	AssetCategoryID string `json:"asset_category_id"`
+	Message string `json:"message"`
 }

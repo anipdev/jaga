@@ -43,10 +43,6 @@ func (ctrl *assetCategoryController) CreateAssetCategory(c *gin.Context) {
 
 	res := dto.CreateAssetCategoryResponse{
 		Message: "Asset category created successfully",
-		AssetCategory: dto.AssetCategoryDTO{
-			ID:   assetCategory.ID,
-			Name: assetCategory.Name,
-		},
 	}
 	c.JSON(http.StatusCreated, res)
 }
@@ -68,8 +64,7 @@ func (ctrl *assetCategoryController) GetAssetCategories(c *gin.Context) {
 	}
 
 	res := dto.GetAssetCategoriesResponse{
-		Message:         "Asset categories retrieved successfully",
-		AssetCategories: assetCategoryDTOs,
+		Message: "Asset categories retrieved successfully",
 	}
 	c.JSON(http.StatusOK, res)
 }
@@ -115,10 +110,6 @@ func (ctrl *assetCategoryController) UpdateAssetCategory(c *gin.Context) {
 
 	res := dto.UpdateAssetCategoryResponse{
 		Message: "Asset category updated successfully",
-		AssetCategory: dto.AssetCategoryDTO{
-			ID:   assetCategory.ID,
-			Name: assetCategory.Name,
-		},
 	}
 	c.JSON(http.StatusOK, res)
 }
@@ -132,8 +123,7 @@ func (ctrl *assetCategoryController) DeleteAssetCategory(c *gin.Context) {
 	}
 
 	res := dto.DeleteAssetCategoryResponse{
-		Message:         "Asset category deleted successfully",
-		AssetCategoryID: id,
+		Message: "Asset category deleted successfully",
 	}
 	c.JSON(http.StatusOK, res)
 }
