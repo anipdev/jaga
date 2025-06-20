@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type AuthController struct {
@@ -30,14 +29,8 @@ func (ctrl *AuthController) Login(c *gin.Context) {
 
 	user, err := ctrl.UserService.GetUserByEmail(req.Email)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Invalid credentials"})
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to retrieve user",
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "User not found",
 		})
 		return
 	}

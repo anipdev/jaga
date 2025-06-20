@@ -2,12 +2,11 @@ package utils
 
 import (
 	"errors"
+	"jaga/config"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
-
-var jwtSecretKey = []byte("your_super_secret_jwt_key") // Ganti dengan kunci rahasia yang kuat!
 
 type Claims struct {
 	UserID string `json:"user_id"`
@@ -16,7 +15,7 @@ type Claims struct {
 }
 
 func GenerateJWT(userID string, role string) (string, error) {
-	expirationTime := time.Now().Add(24 * time.Hour) // Token berlaku 24 jam
+	expirationTime := time.Now().Add(time.Duration(config.JWTExpHours) * time.Hour)
 	claims := &Claims{
 		UserID: userID,
 		Role:   role,
@@ -28,7 +27,7 @@ func GenerateJWT(userID string, role string) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtSecretKey)
+	return token.SignedString(config.JWTSecret)
 }
 
 func ParseJWT(tokenString string) (*Claims, error) {
@@ -38,7 +37,7 @@ func ParseJWT(tokenString string) (*Claims, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		return jwtSecretKey, nil
+		return config.JWTSecret, nil
 	})
 
 	if err != nil {
