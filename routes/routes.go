@@ -14,35 +14,50 @@ import (
 func RegisterRoutes() *gin.Engine {
 	r := gin.Default()
 
+	authController := controllers.NewAuthController(userService)
+
 	userRepositories := repositories.NewUserRepository(config.DB)
 	userService := services.NewUserService(userRepositories)
 	userController := controllers.NewUserController(userService)
-	authController := controllers.NewAuthController(userService)
-
-	r.POST("/login", authController.Login)
-
-	r.POST("/users", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.CreateUser)
-
-	userRoutes := r.Group("/users")
-	{
-		userRoutes.POST("", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.CreateUser)
-		userRoutes.GET("", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.GetUsers)
-		userRoutes.GET("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.GetUserByID)
-		userRoutes.PUT("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.UpdateUser)
-		userRoutes.DELETE("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.DeleteUser)
-	}
 
 	assetCategoryRepository := repositories.NewAssetCategoryRepository(config.DB)
 	assetCategoryService := services.NewAssetCategoryService(assetCategoryRepository)
 	assetCategoryController := controllers.NewAssetCategoryController(assetCategoryService)
 
-	assetCategoryRoutes := r.Group("/asset-categories")
+	assetRepository := repositories.NewAssetRepository(config.DB)
+	assetService := services.NewAssetService(assetRepository)
+	assetController := controllers.NewAssetController(assetService)
+
+	v1 := r.Group("/v1")
 	{
-		assetCategoryRoutes.POST("", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), assetCategoryController.CreateAssetCategory)
-		assetCategoryRoutes.GET("", middleware.RequireRole(consts.AllRoles...), assetCategoryController.GetAssetCategories)
-		assetCategoryRoutes.GET("/:id", middleware.RequireRole(consts.AllRoles...), assetCategoryController.GetAssetCategoryByID)
-		assetCategoryRoutes.PUT("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), assetCategoryController.UpdateAssetCategory)
-		assetCategoryRoutes.DELETE("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), assetCategoryController.DeleteAssetCategory)
+		v1.POST("/login", authController.Login)
+
+		userRoutes := v1.Group("/users")
+		{
+			userRoutes.POST("", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.CreateUser)
+			userRoutes.GET("", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.GetUsers)
+			userRoutes.GET("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.GetUserByID)
+			userRoutes.PUT("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.UpdateUser)
+			userRoutes.DELETE("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), userController.DeleteUser)
+		}
+
+		assetCategoryRoutes := v1.Group("/asset-categories")
+		{
+			assetCategoryRoutes.POST("", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), assetCategoryController.CreateAssetCategory)
+			assetCategoryRoutes.GET("", middleware.RequireRole(consts.AllRoles...), assetCategoryController.GetAssetCategories)
+			assetCategoryRoutes.GET("/:id", middleware.RequireRole(consts.AllRoles...), assetCategoryController.GetAssetCategoryByID)
+			assetCategoryRoutes.PUT("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), assetCategoryController.UpdateAssetCategory)
+			assetCategoryRoutes.DELETE("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), assetCategoryController.DeleteAssetCategory)
+		}
+
+		assetRoutes := v1.Group("/assets")
+		{
+			assetRoutes.POST("", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), assetController.CreateAsset)
+			assetRoutes.GET("", middleware.RequireRole(consts.AllRoles...), assetController.GetAssets)
+			assetRoutes.GET("/:id", middleware.RequireRole(consts.AllRoles...), assetController.GetAssetByID)
+			assetRoutes.PUT("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), assetController.UpdateAsset)
+			assetRoutes.DELETE("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), assetController.DeleteAsset)
+		}
 	}
 
 	return r
