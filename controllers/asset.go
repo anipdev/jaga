@@ -45,7 +45,7 @@ func (ctrl *AssetController) CreateAsset(c *gin.Context) {
 		AddedBy:             req.AddedBy,
 	}
 
-	_, err := ctrl.AssetService.CreateAsset(newAsset)
+	err := ctrl.AssetService.CreateAsset(newAsset)
 	if err != nil {
 		if err.Error() == "category not found" {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Category not found"})
@@ -66,14 +66,13 @@ func (ctrl *AssetController) GetAssetByID(c *gin.Context) {
 	assetModel, err := ctrl.AssetService.GetAssetByID(assetID)
 	if err != nil {
 		if err.Error() == "asset not found" {
-			c.JSON(http.StatusNotFound, dto.GetAssetByIDResponse{
-				Message: "Asset not found",
-				Asset:   dto.AssetDTO{},
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "Asset not found",
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, dto.GetAssetByIDResponse{
-			Message: "Failed to retrieve asset: " + err.Error(),
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to retrieve asset: " + err.Error(),
 		})
 		return
 	}
@@ -163,44 +162,19 @@ func (ctrl *AssetController) UpdateAsset(c *gin.Context) {
 		return
 	}
 
-	req.ID = assetID
-
-	existingAsset, err := ctrl.AssetService.GetAssetByID(assetID)
-	if err != nil {
-		if err.Error() == "asset not found" {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get existing asset: " + err.Error()})
-		return
+	updatedAsset := &models.Asset{
+		ID:                  assetID,
+		Name:                req.Name,
+		CategoryID:          req.CategoryID,
+		Location:            req.Location,
+		PurchaseDate:        req.PurchaseDate,
+		LastMaintenanceDate: req.LastMaintenanceDate,
+		Condition:           req.Condition,
+		Status:              req.Status,
+		AddedBy:             req.AddedBy, // This field usually doesn't change on update. Consider its purpose.
 	}
 
-	if req.Name != "" {
-		existingAsset.Name = req.Name
-	}
-	if req.CategoryID != "" {
-		existingAsset.CategoryID = req.CategoryID
-	}
-	if req.Location != "" {
-		existingAsset.Location = req.Location
-	}
-	if req.PurchaseDate != nil {
-		existingAsset.PurchaseDate = req.PurchaseDate
-	}
-	if req.LastMaintenanceDate != nil {
-		existingAsset.LastMaintenanceDate = req.LastMaintenanceDate
-	}
-	if req.Condition != "" {
-		existingAsset.Condition = req.Condition
-	}
-	if req.Status != "" {
-		existingAsset.Status = req.Status
-	}
-	if req.AddedBy != "" {
-		existingAsset.AddedBy = req.AddedBy
-	}
-
-	_, err = ctrl.AssetService.UpdateAsset(existingAsset)
+	err := ctrl.AssetService.UpdateAsset(updatedAsset)
 	if err != nil {
 		if err.Error() == "asset not found" {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

@@ -5,15 +5,16 @@ import (
 
 	"jaga/models"
 	"jaga/repositories"
+	"jaga/utils"
 
 	"gorm.io/gorm"
 )
 
 type AssetService interface {
-	CreateAsset(asset *models.Asset) (*models.Asset, error)
+	CreateAsset(asset *models.Asset) error
 	GetAssetByID(assetID string) (*models.Asset, error)
 	GetAssets(page, itemsPerPage int, sortBy, sortDir, search, categoryID, status string) ([]models.Asset, int64, error)
-	UpdateAsset(asset *models.Asset) (*models.Asset, error)
+	UpdateAsset(asset *models.Asset) error
 	UpdateAssetStatus(assetID, status string) error
 	DeleteAsset(assetID string) error
 }
@@ -30,22 +31,21 @@ func NewAssetService(assetRepo repositories.AssetRepository, categoryRepo reposi
 	}
 }
 
-func (s *assetService) CreateAsset(asset *models.Asset) (*models.Asset, error) {
+func (s *assetService) CreateAsset(asset *models.Asset) error {
 
 	_, err := s.categoryRepo.GetAssetCategoryByID(asset.CategoryID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("category not found")
+			return errors.New("category not found")
 		}
-		return nil, err
+		return err
 	}
 
-	createdAsset, err := s.assetRepo.CreateAsset(asset)
-	if err != nil {
-		return nil, err
+	if asset.ID == "" {
+		asset.ID = utils.GenerateUUID()
 	}
 
-	return s.assetRepo.GetAssetByID(createdAsset.ID)
+	return s.assetRepo.CreateAsset(asset)
 }
 
 func (s *assetService) GetAssetByID(assetID string) (*models.Asset, error) {
@@ -67,32 +67,27 @@ func (s *assetService) GetAssets(page, itemsPerPage int, sortBy, sortDir, search
 	return assets, totalItems, nil
 }
 
-func (s *assetService) UpdateAsset(asset *models.Asset) (*models.Asset, error) {
+func (s *assetService) UpdateAsset(asset *models.Asset) error {
 
 	_, err := s.assetRepo.GetAssetByID(asset.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("asset not found")
+			return errors.New("asset not found")
 		}
-		return nil, err
+		return err
 	}
 
 	if asset.CategoryID != "" {
 		_, err := s.categoryRepo.GetAssetCategoryByID(asset.CategoryID)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, errors.New("category not found")
+				return errors.New("category not found")
 			}
-			return nil, err
+			return err
 		}
 	}
 
-	updatedAsset, err := s.assetRepo.UpdateAsset(asset)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.assetRepo.GetAssetByID(updatedAsset.ID)
+	return s.assetRepo.UpdateAsset(asset)
 }
 
 func (s *assetService) UpdateAssetStatus(assetID, status string) error {

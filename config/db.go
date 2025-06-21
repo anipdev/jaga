@@ -106,7 +106,7 @@ func SeedSuperUser(userRepo repositories.UserRepository) {
 		Role:         DefaultSuperUserRole,
 	}
 
-	_, err = userRepo.CreateUser(&superUser)
+	err = userRepo.CreateUser(&superUser)
 	if err != nil {
 		log.Fatalf("Failed to create super user with default credentials: %v", err)
 	}

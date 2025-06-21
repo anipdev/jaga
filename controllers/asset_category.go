@@ -28,7 +28,7 @@ func NewAssetCategoryController(service services.AssetCategoryService) AssetCate
 func (ctrl *assetCategoryController) CreateAssetCategory(c *gin.Context) {
 	var req dto.CreateAssetCategoryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
 		return
 	}
 
@@ -37,21 +37,20 @@ func (ctrl *assetCategoryController) CreateAssetCategory(c *gin.Context) {
 	}
 
 	if err := ctrl.service.CreateAssetCategory(&assetCategory); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create asset category: " + err.Error()})
 		return
 	}
 
-	res := dto.CreateAssetCategoryResponse{
+	c.JSON(http.StatusCreated, dto.CreateAssetCategoryResponse{
 		Message: "Asset category created successfully",
-	}
-	c.JSON(http.StatusCreated, res)
+	})
 }
 
 func (ctrl *assetCategoryController) GetAssetCategories(c *gin.Context) {
 
 	assetCategories, err := ctrl.service.GetAssetCategories()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve asset categories: " + err.Error()})
 		return
 	}
 
@@ -63,10 +62,10 @@ func (ctrl *assetCategoryController) GetAssetCategories(c *gin.Context) {
 		})
 	}
 
-	res := dto.GetAssetCategoriesResponse{
-		Message: "Asset categories retrieved successfully",
-	}
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, dto.GetAssetCategoriesResponse{
+		Message:         "Asset categories retrieved successfully",
+		AssetCategories: assetCategoryDTOs,
+	})
 }
 
 func (ctrl *assetCategoryController) GetAssetCategoryByID(c *gin.Context) {
@@ -74,7 +73,11 @@ func (ctrl *assetCategoryController) GetAssetCategoryByID(c *gin.Context) {
 
 	assetCategory, err := ctrl.service.GetAssetCategoryByID(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Asset category not found"})
+		if err.Error() == "asset category not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Asset category not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve asset category: " + err.Error()})
 		return
 	}
 
@@ -92,38 +95,46 @@ func (ctrl *assetCategoryController) UpdateAssetCategory(c *gin.Context) {
 	id := c.Param("id")
 	var req dto.UpdateAssetCategoryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
 		return
 	}
 
-	req.ID = id
-
 	assetCategory := models.AssetCategory{
-		ID:   req.ID,
+		ID:   id,
 		Name: req.Name,
 	}
 
 	if err := ctrl.service.UpdateAssetCategory(&assetCategory); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err.Error() == "asset category not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update asset category: " + err.Error()})
 		return
 	}
 
-	res := dto.UpdateAssetCategoryResponse{
+	c.JSON(http.StatusOK, dto.UpdateAssetCategoryResponse{
 		Message: "Asset category updated successfully",
-	}
-	c.JSON(http.StatusOK, res)
+	})
 }
 
 func (ctrl *assetCategoryController) DeleteAssetCategory(c *gin.Context) {
 	id := c.Param("id")
 
 	if err := ctrl.service.DeleteAssetCategory(id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err.Error() == "asset category not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		if err.Error() == "cannot delete category as it is still used by assets" { // Example if service validates dependencies
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete asset category: " + err.Error()})
 		return
 	}
 
-	res := dto.DeleteAssetCategoryResponse{
+	c.JSON(http.StatusOK, dto.DeleteAssetCategoryResponse{
 		Message: "Asset category deleted successfully",
-	}
-	c.JSON(http.StatusOK, res)
+	})
 }

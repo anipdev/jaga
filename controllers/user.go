@@ -64,16 +64,10 @@ func (ctrl *UserController) GetUserByID(c *gin.Context) {
 	userModel, err := ctrl.UserService.GetUserByID(userID)
 	if err != nil {
 		if err.Error() == "user not found" {
-			c.JSON(http.StatusNotFound, dto.GetUserByIDResponse{
-				Message: "User not found",
-				User:    dto.UserDTO{},
-			})
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, dto.GetUserByIDResponse{
-			Message: "Failed to retrieve user: " + err.Error(),
-			User:    dto.UserDTO{},
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user: " + err.Error()})
 		return
 	}
 
@@ -116,7 +110,7 @@ func (ctrl *UserController) CreateUser(c *gin.Context) {
 		Role:         req.Role,
 	}
 
-	_, err := ctrl.UserService.CreateUser(newUser, creatorRoleStr)
+	err := ctrl.UserService.CreateUser(newUser, creatorRoleStr)
 	if err != nil {
 		if err.Error() == "admin cannot create a user with 'admin' role" {
 			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
@@ -140,7 +134,7 @@ func (ctrl *UserController) UpdateUser(c *gin.Context) {
 	var req dto.UpdateUserRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body: " + err.Error()})
 		return
 	}
 
@@ -155,36 +149,25 @@ func (ctrl *UserController) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	existingUser, err := ctrl.UserService.GetUserByID(userID)
-	if err != nil {
-		if err.Error() == "user not found" {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get existing user: " + err.Error()})
-		return
-	}
-
-	if creatorRoleStr == "admin" && existingUser.Role == "admin" && userID != c.GetString("user_id") {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Admin cannot update another admin"})
-		return
-	}
-
 	updatedUser := &models.User{
 		ID:           userID,
 		Name:         req.Name,
 		Email:        req.Email,
-		PasswordHash: req.Password,
+		PasswordHash: req.Password, // This will be hashed in the service if not empty
 		Role:         req.Role,
 	}
 
-	err = ctrl.UserService.UpdateUser(updatedUser, creatorRoleStr)
+	err := ctrl.UserService.UpdateUser(updatedUser, creatorRoleStr)
 	if err != nil {
 		if err.Error() == "user not found" {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
 		if err.Error() == "admin cannot update a user to 'admin' role" {
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+			return
+		}
+		if err.Error() == "admin cannot update another admin" {
 			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 			return
 		}
@@ -211,25 +194,14 @@ func (ctrl *UserController) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	existingUser, err := ctrl.UserService.GetUserByID(userID)
+	err := ctrl.UserService.DeleteUser(userID, creatorRoleStr)
 	if err != nil {
 		if err.Error() == "user not found" {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get existing user: " + err.Error()})
-		return
-	}
-
-	if creatorRoleStr == "admin" && existingUser.Role == "admin" && userID != c.GetString("user_id") {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Admin cannot delete another admin"})
-		return
-	}
-
-	err = ctrl.UserService.DeleteUser(userID, creatorRoleStr)
-	if err != nil {
-		if err.Error() == "user not found" {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		if err.Error() == "admin cannot delete another admin" {
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user: " + err.Error()})

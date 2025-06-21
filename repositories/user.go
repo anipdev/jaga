@@ -11,7 +11,7 @@ type UserRepository interface {
 	GetUserByID(userID string) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByRole(role string) (*models.User, error)
-	CreateUser(user *models.User) (*models.User, error)
+	CreateUser(user *models.User) error
 	UpdateUser(user *models.User) error
 	DeleteUser(userID string) error
 }
@@ -73,11 +73,11 @@ func (r *userRepository) GetUserByRole(role string) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) CreateUser(user *models.User) (*models.User, error) {
+func (r *userRepository) CreateUser(user *models.User) error {
 	if err := r.db.Create(user).Error; err != nil {
-		return nil, err
+		return err
 	}
-	return user, nil
+	return nil
 }
 
 func (r *userRepository) UpdateUser(user *models.User) error {

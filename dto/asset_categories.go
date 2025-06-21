@@ -28,10 +28,6 @@ type GetAssetCategoriesRequest struct {
 type GetAssetCategoriesResponse struct {
 	Message         string             `json:"message"`
 	AssetCategories []AssetCategoryDTO `json:"asset_categories"`
-	TotalItems      int                `json:"total_items"`
-	Page            int                `json:"page"`
-	ItemsPerPage    int                `json:"items_per_page"`
-	TotalPages      int                `json:"total_pages"`
 }
 
 type UpdateAssetCategoryRequest struct {

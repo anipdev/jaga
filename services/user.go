@@ -14,7 +14,7 @@ type UserService interface {
 	GetUsers(page, itemsPerPage int, sortBy, sortDir string) ([]models.User, int64, error)
 	GetUserByID(userID string) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
-	CreateUser(user *models.User, requesterRole string) (*models.User, error)
+	CreateUser(user *models.User, requesterRole string) error
 	UpdateUser(user *models.User, requesterRole string) error
 	DeleteUser(userID, requesterRole string) error
 }
@@ -47,26 +47,38 @@ func (s *userService) GetUserByID(userID string) (*models.User, error) {
 }
 
 func (s *userService) GetUserByEmail(email string) (*models.User, error) {
-	return s.userRepo.GetUserByEmail(email)
+	user, err := s.userRepo.GetUserByEmail(email)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+	return user, nil
 }
 
-func (s *userService) CreateUser(user *models.User, requesterRole string) (*models.User, error) {
+func (s *userService) CreateUser(user *models.User, requesterRole string) error {
 	if requesterRole == "admin" && user.Role == "admin" {
-		return nil, errors.New("admin cannot create a user with 'admin' role")
+		return errors.New("admin cannot create a user with 'admin' role")
 	}
 
 	_, err := s.userRepo.GetUserByEmail(user.Email)
 	if err == nil {
-		return nil, errors.New("email already registered")
+		return errors.New("email already registered")
 	}
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, err
+		return err // Other database error
+	}
+
+	if user.ID == "" {
+		user.ID = utils.GenerateUUID()
 	}
 
 	hashedPassword, err := utils.HashPassword(user.PasswordHash)
 	if err != nil {
-		return nil, errors.New("failed to hash password")
+		return errors.New("failed to hash password")
 	}
+
 	user.PasswordHash = hashedPassword
 
 	return s.userRepo.CreateUser(user)

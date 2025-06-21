@@ -7,10 +7,10 @@ import (
 )
 
 type AssetRepository interface {
-	CreateAsset(asset *models.Asset) (*models.Asset, error)
+	CreateAsset(asset *models.Asset) error
 	GetAssetByID(assetID string) (*models.Asset, error)
 	GetAssets(page, itemsPerPage int, sortBy, sortDir, search, categoryID, status string) ([]models.Asset, int64, error)
-	UpdateAsset(asset *models.Asset) (*models.Asset, error)
+	UpdateAsset(asset *models.Asset) error
 	UpdateAssetStatus(assetID, status string) error
 	DeleteAsset(assetID string) error
 }
@@ -23,11 +23,11 @@ func NewAssetRepository(db *gorm.DB) AssetRepository {
 	return &assetRepository{db: db}
 }
 
-func (r *assetRepository) CreateAsset(asset *models.Asset) (*models.Asset, error) {
+func (r *assetRepository) CreateAsset(asset *models.Asset) error {
 	if err := r.db.Create(asset).Error; err != nil {
-		return nil, err
+		return err
 	}
-	return asset, nil
+	return nil
 }
 
 func (r *assetRepository) GetAssetByID(assetID string) (*models.Asset, error) {
@@ -78,11 +78,11 @@ func (r *assetRepository) GetAssets(page, itemsPerPage int, sortBy, sortDir, sea
 	return assets, totalItems, nil
 }
 
-func (r *assetRepository) UpdateAsset(asset *models.Asset) (*models.Asset, error) {
+func (r *assetRepository) UpdateAsset(asset *models.Asset) error {
 	if err := r.db.Save(asset).Error; err != nil {
-		return nil, err
+		return err
 	}
-	return asset, nil
+	return nil
 }
 
 func (r *assetRepository) UpdateAssetStatus(assetID, status string) error {
