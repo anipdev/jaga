@@ -28,6 +28,14 @@ func RegisterRoutes() *gin.Engine {
 	assetService := services.NewAssetService(assetRepository, assetCategoryRepository)
 	assetController := controllers.NewAssetController(assetService)
 
+	maintenanceScheduleRepository := repositories.NewMaintenanceScheduleRepository(config.DB)
+	maintenanceScheduleService := services.NewMaintenanceScheduleService(maintenanceScheduleRepository, assetRepository)
+	maintenanceScheduleController := controllers.NewMaintenanceScheduleController(maintenanceScheduleService)
+
+	maintenanceRecordRepository := repositories.NewMaintenanceRecordRepository(config.DB)
+	maintenanceRecordService := services.NewMaintenanceRecordService(maintenanceRecordRepository, assetRepository, maintenanceScheduleRepository, userRepositories)
+	maintenanceRecordController := controllers.NewMaintenanceRecordController(maintenanceRecordService)
+
 	v1 := r.Group("/v1")
 	{
 		v1.POST("/login", authController.Login)
@@ -57,6 +65,25 @@ func RegisterRoutes() *gin.Engine {
 			assetRoutes.GET("/:id", middleware.RequireRole(consts.AllRoles...), assetController.GetAssetByID)
 			assetRoutes.PUT("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), assetController.UpdateAsset)
 			assetRoutes.DELETE("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), assetController.DeleteAsset)
+		}
+
+		maintenanceScheduleRoutes := v1.Group("/maintenance-schedules")
+		{
+			maintenanceScheduleRoutes.POST("", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), maintenanceScheduleController.CreateMaintenanceSchedule)
+			maintenanceScheduleRoutes.GET("", middleware.RequireRole(consts.AllRoles...), maintenanceScheduleController.GetMaintenanceSchedules)
+			maintenanceScheduleRoutes.GET("/:id", middleware.RequireRole(consts.AllRoles...), maintenanceScheduleController.GetMaintenanceScheduleByID)
+			maintenanceScheduleRoutes.PUT("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), maintenanceScheduleController.UpdateMaintenanceSchedule)
+			maintenanceScheduleRoutes.DELETE("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), maintenanceScheduleController.DeleteMaintenanceSchedule)
+		}
+
+		maintenanceRecordRoutes := v1.Group("/maintenance-records")
+		{
+			maintenanceRecordRoutes.POST("", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), maintenanceRecordController.CreateMaintenanceRecord)
+			maintenanceRecordRoutes.GET("", middleware.RequireRole(consts.AllRoles...), maintenanceRecordController.GetMaintenanceRecords)
+			maintenanceRecordRoutes.GET("/:id", middleware.RequireRole(consts.AllRoles...), maintenanceRecordController.GetMaintenanceRecordByID)
+			maintenanceRecordRoutes.PUT("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), maintenanceRecordController.UpdateMaintenanceRecord)
+			maintenanceRecordRoutes.PUT("/:id/status", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin, consts.RoleTechnician), maintenanceRecordController.UpdateMaintenanceRecordStatus)
+			maintenanceRecordRoutes.DELETE("/:id", middleware.RequireRole(consts.RoleSuperUser, consts.RoleAdmin), maintenanceRecordController.DeleteMaintenanceRecord)
 		}
 	}
 

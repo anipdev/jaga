@@ -31,7 +31,6 @@ type GetAssetCategoriesResponse struct {
 }
 
 type UpdateAssetCategoryRequest struct {
-	ID   string `json:"id" binding:"required"`
 	Name string `json:"name" binding:"required,min=2,max=100"`
 }
 
