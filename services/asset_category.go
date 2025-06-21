@@ -1,12 +1,9 @@
 package services
 
 import (
-	"errors"
 	"jaga/models"
 	"jaga/repositories"
 	"jaga/utils"
-
-	"gorm.io/gorm"
 )
 
 type AssetCategoryService interface {
@@ -42,13 +39,6 @@ func (s *assetCategoryService) GetAssetCategoryByID(id string) (*models.AssetCat
 }
 
 func (s *assetCategoryService) UpdateAssetCategory(assetCategory *models.AssetCategory) error {
-	_, err := s.repo.GetAssetCategoryByID(assetCategory.ID)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("asset category not found") // Translate error
-		}
-		return err
-	}
 	return s.repo.UpdateAssetCategory(assetCategory)
 }
 

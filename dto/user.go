@@ -48,11 +48,9 @@ type UpdateUserRequest struct {
 }
 
 type UpdateUserResponse struct {
-	Message string  `json:"message"`
-	User    UserDTO `json:"user"`
+	Message string `json:"message"`
 }
 
 type DeleteUserResponse struct {
 	Message string `json:"message"`
-	UserID  string `json:"userId"`
 }
