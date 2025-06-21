@@ -15,6 +15,7 @@ type GetUserByIDResponse struct {
 type GetUsersRequest struct {
 	Page         int    `json:"page" binding:"omitempty,min=1"`
 	ItemsPerPage int    `json:"items_per_page" binding:"omitempty,min=1"`
+	Search       string `json:"search" binding:"omitempty"`
 	SortBy       string `json:"sort_by" binding:"omitempty,oneof=id name email role created_at updated_at"`
 	SortDir      string `json:"sort_dir" binding:"omitempty,oneof=asc desc"`
 }

@@ -27,7 +27,7 @@ func (ctrl *UserController) GetUsers(c *gin.Context) {
 		return
 	}
 
-	usersModel, totalItems, err := ctrl.UserService.GetUsers(req.Page, req.ItemsPerPage, req.SortBy, req.SortDir)
+	usersModel, totalItems, err := ctrl.UserService.GetUsers(req.Page, req.ItemsPerPage, req.SortBy, req.SortDir, req.Search)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve users: " + err.Error()})
 		return
@@ -153,7 +153,7 @@ func (ctrl *UserController) UpdateUser(c *gin.Context) {
 		ID:           userID,
 		Name:         req.Name,
 		Email:        req.Email,
-		PasswordHash: req.Password, // This will be hashed in the service if not empty
+		PasswordHash: req.Password,
 		Role:         req.Role,
 	}
 

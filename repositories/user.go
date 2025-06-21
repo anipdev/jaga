@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	GetUsers(page, itemsPerPage int, sortBy, sortDir string) ([]models.User, int64, error)
+	GetUsers(page, itemsPerPage int, sortBy, sortDir, search string) ([]models.User, int64, error)
 	GetUserByID(userID string) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByRole(role string) (*models.User, error)
@@ -24,22 +24,35 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db: db}
 }
 
-func (r *userRepository) GetUsers(page, itemsPerPage int, sortBy, sortDir string) ([]models.User, int64, error) {
+func (r *userRepository) GetUsers(page, itemsPerPage int, sortBy, sortDir, search string) ([]models.User, int64, error) {
 	var users []models.User
 	var totalItems int64
 
-	if err := r.db.Model(&models.User{}).Count(&totalItems).Error; err != nil {
-		return nil, 0, err
+	query := r.db.Model(&models.User{})
+
+	if search != "" {
+
+		query = query.Where("name ILIKE ? OR email ILIKE ?", "%"+search+"%", "%"+search+"%")
 	}
 
-	offset := (page - 1) * itemsPerPage
-	query := r.db.Offset(offset).Limit(itemsPerPage)
+	if err := query.Count(&totalItems).Error; err != nil {
+		return nil, 0, err
+	}
 
 	if sortBy != "" && sortDir != "" {
 		query = query.Order(sortBy + " " + sortDir)
 	} else {
 		query = query.Order("created_at desc")
 	}
+
+	offset := (page - 1) * itemsPerPage
+	if offset < 0 {
+		offset = 0
+	}
+	if itemsPerPage < 1 {
+		itemsPerPage = 10
+	}
+	query = query.Limit(itemsPerPage).Offset(offset)
 
 	if err := query.Find(&users).Error; err != nil {
 		return nil, 0, err

@@ -11,7 +11,7 @@ import (
 )
 
 type UserService interface {
-	GetUsers(page, itemsPerPage int, sortBy, sortDir string) ([]models.User, int64, error)
+	GetUsers(page, itemsPerPage int, sortBy, sortDir, search string) ([]models.User, int64, error)
 	GetUserByID(userID string) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
 	CreateUser(user *models.User, requesterRole string) error
@@ -27,8 +27,8 @@ func NewUserService(userRepo repositories.UserRepository) UserService {
 	return &userService{userRepo: userRepo}
 }
 
-func (s *userService) GetUsers(page, itemsPerPage int, sortBy, sortDir string) ([]models.User, int64, error) {
-	users, totalItems, err := s.userRepo.GetUsers(page, itemsPerPage, sortBy, sortDir)
+func (s *userService) GetUsers(page, itemsPerPage int, sortBy, sortDir, search string) ([]models.User, int64, error) {
+	users, totalItems, err := s.userRepo.GetUsers(page, itemsPerPage, sortBy, sortDir, search)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -67,7 +67,7 @@ func (s *userService) CreateUser(user *models.User, requesterRole string) error 
 		return errors.New("email already registered")
 	}
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return err // Other database error
+		return err
 	}
 
 	if user.ID == "" {
