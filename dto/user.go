@@ -40,7 +40,6 @@ type CreateUserResponse struct {
 }
 
 type UpdateUserRequest struct {
-	ID       string `json:"id" binding:"required"`
 	Name     string `json:"name,omitempty"`
 	Email    string `json:"email,omitempty" binding:"omitempty,email"`
 	Password string `json:"password,omitempty" binding:"omitempty,min=8"`

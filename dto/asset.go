@@ -57,7 +57,6 @@ type GetAssetsResponse struct {
 }
 
 type UpdateAssetRequest struct {
-	ID                  string     `json:"id" binding:"required"`
 	Name                string     `json:"name" binding:"omitempty,min=2,max=100"`
 	CategoryID          string     `json:"category_id" binding:"omitempty"`
 	Location            string     `json:"location" binding:"omitempty,max=100"`
