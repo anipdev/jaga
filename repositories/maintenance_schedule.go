@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"jaga/models"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -9,7 +10,7 @@ import (
 type MaintenanceScheduleRepository interface {
 	CreateMaintenanceSchedule(schedule *models.MaintenanceSchedule) error
 	GetMaintenanceScheduleByID(scheduleID string) (*models.MaintenanceSchedule, error)
-	GetMaintenanceSchedules(page, itemsPerPage int, sortBy, sortDir, assetID, scheduleType string) ([]models.MaintenanceSchedule, int64, error)
+	GetMaintenanceSchedules(page, itemsPerPage int, sortBy, sortDir, assetID, scheduleType string, startDate, endDate *time.Time) ([]models.MaintenanceSchedule, int64, error)
 	UpdateMaintenanceSchedule(schedule *models.MaintenanceSchedule) error
 	DeleteMaintenanceSchedule(scheduleID string) error
 }
@@ -35,7 +36,7 @@ func (r *maintenanceScheduleRepository) GetMaintenanceScheduleByID(scheduleID st
 	return &schedule, nil
 }
 
-func (r *maintenanceScheduleRepository) GetMaintenanceSchedules(page, itemsPerPage int, sortBy, sortDir, assetID, scheduleType string) ([]models.MaintenanceSchedule, int64, error) {
+func (r *maintenanceScheduleRepository) GetMaintenanceSchedules(page, itemsPerPage int, sortBy, sortDir, assetID, scheduleType string, startDate, endDate *time.Time) ([]models.MaintenanceSchedule, int64, error) {
 	var schedules []models.MaintenanceSchedule
 	var totalItems int64
 
@@ -46,6 +47,14 @@ func (r *maintenanceScheduleRepository) GetMaintenanceSchedules(page, itemsPerPa
 	}
 	if scheduleType != "" {
 		query = query.Where("schedule_type = ?", scheduleType)
+	}
+
+	if startDate != nil && endDate != nil {
+		query = query.Where("next_maintenance_date BETWEEN ? AND ?", *startDate, *endDate)
+	} else if startDate != nil {
+		query = query.Where("next_maintenance_date >= ?", *startDate)
+	} else if endDate != nil {
+		query = query.Where("next_maintenance_date <= ?", *endDate)
 	}
 
 	if err := query.Count(&totalItems).Error; err != nil {

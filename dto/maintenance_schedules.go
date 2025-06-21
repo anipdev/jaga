@@ -34,12 +34,14 @@ type GetMaintenanceScheduleByIDResponse struct {
 }
 
 type GetMaintenanceSchedulesRequest struct {
-	Page         int    `form:"page,default=1"`
-	ItemsPerPage int    `form:"items_per_page,default=10"`
-	SortBy       string `form:"sort_by,default=next_maintenance_date"`
-	SortDir      string `form:"sort_dir,default=asc"`
-	AssetID      string `form:"asset_id"`
-	ScheduleType string `form:"schedule_type"`
+	Page         int        `form:"page,default=1"`
+	ItemsPerPage int        `form:"items_per_page,default=10"`
+	SortBy       string     `form:"sort_by,default=next_maintenance_date"`
+	SortDir      string     `form:"sort_dir,default=asc"`
+	AssetID      string     `form:"asset_id"`
+	ScheduleType string     `form:"schedule_type"`
+	StartDate    *time.Time `form:"start_date" time_format:"2006-01-02"`
+	EndDate      *time.Time `form:"end_date" time_format:"2006-01-02"`
 }
 
 type GetMaintenanceSchedulesResponse struct {

@@ -103,6 +103,8 @@ func (ctrl *maintenanceScheduleController) GetMaintenanceSchedules(c *gin.Contex
 		req.SortDir,
 		req.AssetID,
 		req.ScheduleType,
+		req.StartDate,
+		req.EndDate,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve maintenance schedules: " + err.Error()})
@@ -128,6 +130,8 @@ func (ctrl *maintenanceScheduleController) GetMaintenanceSchedules(c *gin.Contex
 	totalPages := 0
 	if req.ItemsPerPage > 0 {
 		totalPages = int(math.Ceil(float64(totalItems) / float64(req.ItemsPerPage)))
+	} else if totalItems > 0 {
+		totalPages = 1
 	}
 
 	c.JSON(http.StatusOK, dto.GetMaintenanceSchedulesResponse{

@@ -5,6 +5,7 @@ import (
 	"jaga/models"
 	"jaga/repositories"
 	"jaga/utils"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -12,7 +13,7 @@ import (
 type MaintenanceScheduleService interface {
 	CreateMaintenanceSchedule(schedule *models.MaintenanceSchedule) error
 	GetMaintenanceScheduleByID(scheduleID string) (*models.MaintenanceSchedule, error)
-	GetMaintenanceSchedules(page, itemsPerPage int, sortBy, sortDir, assetID, scheduleType string) ([]models.MaintenanceSchedule, int64, error)
+	GetMaintenanceSchedules(page, itemsPerPage int, sortBy, sortDir, assetID, scheduleType string, startDate, endDate *time.Time) ([]models.MaintenanceSchedule, int64, error)
 	UpdateMaintenanceSchedule(schedule *models.MaintenanceSchedule) error
 	DeleteMaintenanceSchedule(scheduleID string) error
 }
@@ -52,8 +53,10 @@ func (s *maintenanceScheduleService) GetMaintenanceScheduleByID(scheduleID strin
 	return schedule, nil
 }
 
-func (s *maintenanceScheduleService) GetMaintenanceSchedules(page, itemsPerPage int, sortBy, sortDir, assetID, scheduleType string) ([]models.MaintenanceSchedule, int64, error) {
-	schedules, totalItems, err := s.repo.GetMaintenanceSchedules(page, itemsPerPage, sortBy, sortDir, assetID, scheduleType)
+func (s *maintenanceScheduleService) GetMaintenanceSchedules(page, itemsPerPage int, sortBy, sortDir, assetID, scheduleType string, startDate, endDate *time.Time) ([]models.MaintenanceSchedule, int64, error) {
+	schedules, totalItems, err := s.repo.GetMaintenanceSchedules(
+		page, itemsPerPage, sortBy, sortDir, assetID, scheduleType, nil, nil,
+	)
 	if err != nil {
 		return nil, 0, err
 	}

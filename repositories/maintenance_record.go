@@ -9,7 +9,10 @@ import (
 type MaintenanceRecordRepository interface {
 	CreateMaintenanceRecord(record *models.MaintenanceRecord) error
 	GetMaintenanceRecordByID(recordID string) (*models.MaintenanceRecord, error)
-	GetMaintenanceRecords(page, itemsPerPage int, sortBy, sortDir, assetID, scheduleID, status string) ([]models.MaintenanceRecord, int64, error)
+	GetMaintenanceRecords(
+		page, itemsPerPage int,
+		sortBy, sortDir, assetID, status string,
+		scheduleIDs ...string) ([]models.MaintenanceRecord, int64, error)
 	UpdateMaintenanceRecord(record *models.MaintenanceRecord) error
 	DeleteMaintenanceRecord(recordID string) error
 }
@@ -35,7 +38,12 @@ func (r *maintenanceRecordRepository) GetMaintenanceRecordByID(recordID string) 
 	return &record, nil
 }
 
-func (r *maintenanceRecordRepository) GetMaintenanceRecords(page, itemsPerPage int, sortBy, sortDir, assetID, scheduleID, status string) ([]models.MaintenanceRecord, int64, error) {
+func (r *maintenanceRecordRepository) GetMaintenanceRecords(
+	page, itemsPerPage int,
+	sortBy, sortDir, assetID, status string,
+	scheduleIDs ...string,
+) ([]models.MaintenanceRecord, int64, error) {
+
 	var records []models.MaintenanceRecord
 	var totalItems int64
 
@@ -44,11 +52,12 @@ func (r *maintenanceRecordRepository) GetMaintenanceRecords(page, itemsPerPage i
 	if assetID != "" {
 		query = query.Where("asset_id = ?", assetID)
 	}
-	if scheduleID != "" {
-		query = query.Where("schedule_id = ?", scheduleID)
-	}
 	if status != "" {
 		query = query.Where("status = ?", status)
+	}
+
+	if len(scheduleIDs) > 0 {
+		query = query.Where("schedule_id IN (?)", scheduleIDs)
 	}
 
 	if err := query.Count(&totalItems).Error; err != nil {
