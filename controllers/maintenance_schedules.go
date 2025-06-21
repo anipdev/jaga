@@ -27,6 +27,15 @@ func NewMaintenanceScheduleController(service services.MaintenanceScheduleServic
 	return &maintenanceScheduleController{service: service}
 }
 
+// CreateMaintenanceSchedule godoc
+// @Summary Create a new maintenance schedule
+// @Description Create a new maintenance schedule for a specific asset
+// @Tags MaintenanceSchedules
+// @Accept json
+// @Produce json
+// @Param request body dto.CreateMaintenanceScheduleRequest true "Create Maintenance Schedule Request"
+// @Success 201 {object} dto.CreateMaintenanceScheduleResponse
+// @Router /v1/maintenance-schedules [post]
 func (ctrl *maintenanceScheduleController) CreateMaintenanceSchedule(c *gin.Context) {
 	var req dto.CreateMaintenanceScheduleRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -57,6 +66,14 @@ func (ctrl *maintenanceScheduleController) CreateMaintenanceSchedule(c *gin.Cont
 	})
 }
 
+// GetMaintenanceScheduleByID godoc
+// @Summary Get a maintenance schedule by ID
+// @Description Retrieve a maintenance schedule using its ID
+// @Tags MaintenanceSchedules
+// @Produce json
+// @Param id path string true "Maintenance Schedule ID"
+// @Success 200 {object} dto.GetMaintenanceScheduleByIDResponse
+// @Router /v1/maintenance-schedules/{id} [get]
 func (ctrl *maintenanceScheduleController) GetMaintenanceScheduleByID(c *gin.Context) {
 	scheduleID := c.Param("id")
 
@@ -88,6 +105,13 @@ func (ctrl *maintenanceScheduleController) GetMaintenanceScheduleByID(c *gin.Con
 	c.JSON(http.StatusOK, res)
 }
 
+// GetMaintenanceSchedules godoc
+// @Summary Get maintenance schedules
+// @Description Retrieve a paginated list of maintenance schedules
+// @Tags MaintenanceSchedules
+// @Produce json
+// @Success 200 {object} dto.GetMaintenanceSchedulesResponse
+// @Router /v1/maintenance-schedules [get]
 func (ctrl *maintenanceScheduleController) GetMaintenanceSchedules(c *gin.Context) {
 	var req dto.GetMaintenanceSchedulesRequest
 
@@ -144,6 +168,15 @@ func (ctrl *maintenanceScheduleController) GetMaintenanceSchedules(c *gin.Contex
 	})
 }
 
+// UpdateMaintenanceSchedule godoc
+// @Summary Update a maintenance schedule
+// @Description Update an existing maintenance schedule by its ID
+// @Tags MaintenanceSchedules
+// @Produce json
+// @Param id path string true "Maintenance Schedule ID"
+// @Param request body dto.UpdateMaintenanceScheduleRequest true "Update Maintenance Schedule Request"
+// @Success 200 {object} dto.UpdateMaintenanceScheduleResponse
+// @Router /v1/maintenance-schedules/{id} [put]
 func (ctrl *maintenanceScheduleController) UpdateMaintenanceSchedule(c *gin.Context) {
 	scheduleID := c.Param("id")
 	var req dto.UpdateMaintenanceScheduleRequest
@@ -187,6 +220,14 @@ func (ctrl *maintenanceScheduleController) UpdateMaintenanceSchedule(c *gin.Cont
 	})
 }
 
+// DeleteMaintenanceSchedule godoc
+// @Summary Delete a maintenance schedule
+// @Description Delete an existing maintenance schedule by its ID
+// @Tags MaintenanceSchedules
+// @Produce json
+// @Param id path string true "Maintenance Schedule ID"
+// @Success 200 {object} dto.DeleteMaintenanceScheduleResponse
+// @Router /v1/maintenance-schedules/{id} [delete]
 func (ctrl *maintenanceScheduleController) DeleteMaintenanceSchedule(c *gin.Context) {
 	scheduleID := c.Param("id")
 

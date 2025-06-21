@@ -28,6 +28,15 @@ func NewMaintenanceRecordController(service services.MaintenanceRecordService) M
 	return &maintenanceRecordController{service: service}
 }
 
+// Create a new maintenance record
+// @Summary Create a new maintenance record
+// @Description Create a maintenance record for an asset
+// @Tags MaintenanceRecords
+// @Accept json
+// @Produce json
+// @Param body body dto.CreateMaintenanceRecordRequest true "Create Maintenance Record"
+// @Success 201 {object} dto.CreateMaintenanceRecordResponse
+// @Router /v1/maintenance-records [post]
 func (ctrl *maintenanceRecordController) CreateMaintenanceRecord(c *gin.Context) {
 	var req dto.CreateMaintenanceRecordRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -60,6 +69,15 @@ func (ctrl *maintenanceRecordController) CreateMaintenanceRecord(c *gin.Context)
 	})
 }
 
+// Get a maintenance record by ID
+// @Summary Get a maintenance record by ID
+// @Description Retrieve a maintenance record by its ID
+// @Tags MaintenanceRecords
+// @Accept json
+// @Produce json
+// @Param id path string true "Maintenance Record ID"
+// @Success 200 {object} dto.GetMaintenanceRecordByIDResponse
+// @Router /v1/maintenance-records/{id} [get]
 func (ctrl *maintenanceRecordController) GetMaintenanceRecordByID(c *gin.Context) {
 	recordID := c.Param("id")
 	recordModel, err := ctrl.service.GetMaintenanceRecordByID(recordID)
@@ -90,6 +108,14 @@ func (ctrl *maintenanceRecordController) GetMaintenanceRecordByID(c *gin.Context
 	c.JSON(http.StatusOK, res)
 }
 
+// Get a list of maintenance records
+// @Summary Get a list of maintenance records
+// @Description Retrieve maintenance records with optional filters and pagination
+// @Tags MaintenanceRecords
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.GetMaintenanceRecordsResponse
+// @Router /v1/maintenance-records [get]
 func (ctrl *maintenanceRecordController) GetMaintenanceRecords(c *gin.Context) {
 	var req dto.GetMaintenanceRecordsRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -142,6 +168,16 @@ func (ctrl *maintenanceRecordController) GetMaintenanceRecords(c *gin.Context) {
 	})
 }
 
+// Update an existing maintenance record
+// @Summary Update an existing maintenance record
+// @Description Update the details of an existing maintenance record
+// @Tags MaintenanceRecords
+// @Accept json
+// @Produce json
+// @Param id path string true "Maintenance Record ID"
+// @Param body body dto.UpdateMaintenanceRecordRequest true "Update Maintenance Record"
+// @Success 200 {object} dto.UpdateMaintenanceRecordResponse
+// @Router /v1/maintenance-records/{id} [put]
 func (ctrl *maintenanceRecordController) UpdateMaintenanceRecord(c *gin.Context) {
 	recordID := c.Param("id")
 	var req dto.UpdateMaintenanceRecordRequest
@@ -177,6 +213,16 @@ func (ctrl *maintenanceRecordController) UpdateMaintenanceRecord(c *gin.Context)
 	})
 }
 
+// Update the status of a maintenance record
+// @Summary Update the status of a maintenance record
+// @Description Update the status of a specific maintenance record
+// @Tags MaintenanceRecords
+// @Accept json
+// @Produce json
+// @Param id path string true "Maintenance Record ID"
+// @Param body body dto.UpdateMaintenanceRecordStatusRequest true "Update Maintenance Record Status"
+// @Success 200 {object} dto.UpdateMaintenanceRecordResponse
+// @Router /v1/maintenance-records/{id}/status [put]
 func (ctrl *maintenanceRecordController) UpdateMaintenanceRecordStatus(c *gin.Context) {
 	recordID := c.Param("id")
 	var req dto.UpdateMaintenanceRecordStatusRequest
@@ -199,6 +245,15 @@ func (ctrl *maintenanceRecordController) UpdateMaintenanceRecordStatus(c *gin.Co
 	})
 }
 
+// Delete a maintenance record by ID
+// @Summary Delete a maintenance record by ID
+// @Description Delete the maintenance record identified by the ID
+// @Tags MaintenanceRecords
+// @Accept json
+// @Produce json
+// @Param id path string true "Maintenance Record ID"
+// @Success 200 {object} dto.DeleteMaintenanceRecordResponse
+// @Router /v1/maintenance-records/{id} [delete]
 func (ctrl *maintenanceRecordController) DeleteMaintenanceRecord(c *gin.Context) {
 	recordID := c.Param("id")
 	if err := ctrl.service.DeleteMaintenanceRecord(recordID); err != nil {

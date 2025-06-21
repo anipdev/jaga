@@ -19,6 +19,14 @@ func NewUserController(userService services.UserService) *UserController {
 	return &UserController{UserService: userService}
 }
 
+// GetUsers godoc
+// @Summary Get list of users
+// @Description Retrieve list of users
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.GetUsersResponse
+// @Router /v1/users [get]
 func (ctrl *UserController) GetUsers(c *gin.Context) {
 	var req dto.GetUsersRequest
 
@@ -58,6 +66,15 @@ func (ctrl *UserController) GetUsers(c *gin.Context) {
 	})
 }
 
+// GetUserByID godoc
+// @Summary Get user by ID
+// @Description Retrieve user details by their unique ID
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} dto.GetUserByIDResponse
+// @Router /v1/users/{id} [get]
 func (ctrl *UserController) GetUserByID(c *gin.Context) {
 	userID := c.Param("id")
 
@@ -84,6 +101,15 @@ func (ctrl *UserController) GetUserByID(c *gin.Context) {
 	})
 }
 
+// CreateUser godoc
+// @Summary Create a new user
+// @Description Create a new user with a specified role and credentials
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param user body dto.CreateUserRequest true "Create User"
+// @Success 201 {object} dto.CreateUserResponse
+// @Router /v1/users [post]
 func (ctrl *UserController) CreateUser(c *gin.Context) {
 	var req dto.CreateUserRequest
 
@@ -129,6 +155,16 @@ func (ctrl *UserController) CreateUser(c *gin.Context) {
 	})
 }
 
+// UpdateUser godoc
+// @Summary Update user information
+// @Description Update an existing user's information
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Param user body dto.UpdateUserRequest true "Update User"
+// @Success 201 {object} dto.UpdateUserResponse
+// @Router /v1/users/{id} [put]
 func (ctrl *UserController) UpdateUser(c *gin.Context) {
 	userID := c.Param("id")
 	var req dto.UpdateUserRequest
@@ -180,6 +216,15 @@ func (ctrl *UserController) UpdateUser(c *gin.Context) {
 	})
 }
 
+// DeleteUser godoc
+// @Summary Delete user
+// @Description Delete a user by their unique ID
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} dto.DeleteUserResponse
+// @Router /v1/users/{id} [delete]
 func (ctrl *UserController) DeleteUser(c *gin.Context) {
 	userID := c.Param("id")
 

@@ -13,6 +13,15 @@ type AuthController struct {
 	UserService services.UserService
 }
 
+// Login godoc
+// @Summary Login user
+// @Description Login with email and password, and receive a JWT token
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param loginRequest body dto.LoginRequest true "Login request"
+// @Success 200 {object} dto.LoginResponse
+// @Router /v1/login [post]
 func NewAuthController(userService services.UserService) *AuthController {
 	return &AuthController{UserService: userService}
 }

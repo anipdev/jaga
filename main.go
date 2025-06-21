@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"jaga/config"
+	_ "jaga/docs"
 	"jaga/repositories"
 	"jaga/routes"
 
@@ -18,6 +19,7 @@ func init() {
 	}
 }
 
+// @title Jaga Asset Management API
 func main() {
 
 	db := config.InitDB()

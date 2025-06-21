@@ -1,0 +1,1113 @@
+definitions:
+  dto.AssetCategoryDTO:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.AssetDTO:
+    properties:
+      added_by:
+        type: string
+      category_id:
+        type: string
+      category_name:
+        type: string
+      condition:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      last_maintenance_date:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      purchase_date:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.CreateAssetCategoryRequest:
+    properties:
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  dto.CreateAssetCategoryResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.CreateAssetRequest:
+    properties:
+      added_by:
+        type: string
+      category_id:
+        type: string
+      condition:
+        maxLength: 50
+        type: string
+      last_maintenance_date:
+        type: string
+      location:
+        maxLength: 100
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      purchase_date:
+        type: string
+      status:
+        enum:
+        - ready
+        - under_maintenance
+        - need_maintenance
+        type: string
+    required:
+    - added_by
+    - category_id
+    - name
+    - status
+    type: object
+  dto.CreateAssetResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.CreateMaintenanceRecordRequest:
+    properties:
+      asset_id:
+        type: string
+      description:
+        maxLength: 500
+        minLength: 5
+        type: string
+      maintenance_date:
+        type: string
+      performed_by:
+        type: string
+      schedule_id:
+        type: string
+      status:
+        enum:
+        - pending
+        - in_progress
+        - on_hold
+        - finished
+        - failed
+        - cancelled
+        type: string
+    required:
+    - asset_id
+    - description
+    - maintenance_date
+    - status
+    type: object
+  dto.CreateMaintenanceRecordResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.CreateMaintenanceScheduleRequest:
+    properties:
+      asset_id:
+        type: string
+      assigned_to:
+        type: string
+      interval_days:
+        type: integer
+      next_maintenance_date:
+        type: string
+      schedule_type:
+        enum:
+        - periodic
+        - conditional
+        type: string
+      scheduled_by:
+        type: string
+    required:
+    - asset_id
+    - next_maintenance_date
+    - schedule_type
+    type: object
+  dto.CreateMaintenanceScheduleResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      role:
+        enum:
+        - super_user
+        - admin
+        - technician
+        - manager
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - role
+    type: object
+  dto.CreateUserResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.DeleteAssetCategoryResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.DeleteAssetResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.DeleteMaintenanceRecordResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.DeleteMaintenanceScheduleResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.DeleteUserResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.GetAssetByIDResponse:
+    properties:
+      asset:
+        $ref: '#/definitions/dto.AssetDTO'
+      message:
+        type: string
+    type: object
+  dto.GetAssetCategoriesResponse:
+    properties:
+      asset_categories:
+        items:
+          $ref: '#/definitions/dto.AssetCategoryDTO'
+        type: array
+      message:
+        type: string
+    type: object
+  dto.GetAssetCategoryByIDResponse:
+    properties:
+      asset_category:
+        $ref: '#/definitions/dto.AssetCategoryDTO'
+      message:
+        type: string
+    type: object
+  dto.GetAssetsResponse:
+    properties:
+      assets:
+        items:
+          $ref: '#/definitions/dto.AssetDTO'
+        type: array
+      items_per_page:
+        type: integer
+      message:
+        type: string
+      page:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  dto.GetMaintenanceRecordByIDResponse:
+    properties:
+      maintenance_record:
+        $ref: '#/definitions/dto.MaintenanceRecordDTO'
+      message:
+        type: string
+    type: object
+  dto.GetMaintenanceRecordsResponse:
+    properties:
+      items_per_page:
+        type: integer
+      maintenance_records:
+        items:
+          $ref: '#/definitions/dto.MaintenanceRecordDTO'
+        type: array
+      message:
+        type: string
+      page:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  dto.GetMaintenanceScheduleByIDResponse:
+    properties:
+      maintenance_schedule:
+        $ref: '#/definitions/dto.MaintenanceScheduleDTO'
+      message:
+        type: string
+    type: object
+  dto.GetMaintenanceSchedulesResponse:
+    properties:
+      items_per_page:
+        type: integer
+      maintenance_schedules:
+        items:
+          $ref: '#/definitions/dto.MaintenanceScheduleDTO'
+        type: array
+      message:
+        type: string
+      page:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  dto.GetUserByIDResponse:
+    properties:
+      message:
+        type: string
+      user:
+        $ref: '#/definitions/dto.UserDTO'
+    type: object
+  dto.GetUsersResponse:
+    properties:
+      items_per_page:
+        type: integer
+      message:
+        type: string
+      page:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/dto.UserDTO'
+        type: array
+    type: object
+  dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.LoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  dto.MaintenanceRecordDTO:
+    properties:
+      asset_id:
+        type: string
+      asset_name:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      maintenance_date:
+        type: string
+      performed_by_user_id:
+        type: string
+      performed_by_user_name:
+        type: string
+      schedule_id:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.MaintenanceScheduleDTO:
+    properties:
+      asset_id:
+        type: string
+      asset_name:
+        type: string
+      assigned_to:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      interval_days:
+        type: integer
+      next_maintenance_date:
+        type: string
+      schedule_type:
+        type: string
+      scheduled_by:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.UpdateAssetCategoryRequest:
+    properties:
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+    required:
+    - name
+    type: object
+  dto.UpdateAssetCategoryResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.UpdateAssetRequest:
+    properties:
+      added_by:
+        type: string
+      category_id:
+        type: string
+      condition:
+        maxLength: 50
+        type: string
+      last_maintenance_date:
+        type: string
+      location:
+        maxLength: 100
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      purchase_date:
+        type: string
+      status:
+        enum:
+        - ready
+        - under_maintenance
+        - need_maintenance
+        type: string
+    type: object
+  dto.UpdateAssetResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.UpdateAssetStatusRequest:
+    properties:
+      status:
+        enum:
+        - ready
+        - under_maintenance
+        - need_maintenance
+        type: string
+    required:
+    - status
+    type: object
+  dto.UpdateMaintenanceRecordRequest:
+    properties:
+      asset_id:
+        type: string
+      description:
+        maxLength: 500
+        minLength: 5
+        type: string
+      maintenance_date:
+        type: string
+      performed_by:
+        type: string
+      schedule_id:
+        type: string
+      status:
+        enum:
+        - pending
+        - in_progress
+        - on_hold
+        - finished
+        - failed
+        - cancelled
+        type: string
+    type: object
+  dto.UpdateMaintenanceRecordResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.UpdateMaintenanceRecordStatusRequest:
+    properties:
+      status:
+        enum:
+        - pending
+        - in_progress
+        - on_hold
+        - finished
+        - failed
+        - cancelled
+        type: string
+    required:
+    - status
+    type: object
+  dto.UpdateMaintenanceScheduleRequest:
+    properties:
+      assigned_to:
+        type: string
+      interval_days:
+        type: integer
+      next_maintenance_date:
+        type: string
+      schedule_type:
+        enum:
+        - periodic
+        - conditional
+        type: string
+      scheduled_by:
+        type: string
+    type: object
+  dto.UpdateMaintenanceScheduleResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      role:
+        enum:
+        - super_user
+        - admin
+        - technician
+        - manager
+        type: string
+    type: object
+  dto.UpdateUserResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.UserDTO:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: Jaga Asset Management API
+paths:
+  /v1/asset-categories:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of asset categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetAssetCategoriesResponse'
+      summary: Get list of asset categories
+      tags:
+      - Asset Categories
+    post:
+      consumes:
+      - application/json
+      description: Create a new asset category with a specified name
+      parameters:
+      - description: Asset category request
+        in: body
+        name: assetCategoryRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAssetCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreateAssetCategoryResponse'
+      summary: Create a new asset category
+      tags:
+      - Asset Categories
+  /v1/asset-categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an asset category by its unique ID
+      parameters:
+      - description: Asset Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteAssetCategoryResponse'
+      summary: Delete an asset category
+      tags:
+      - Asset Categories
+    get:
+      consumes:
+      - application/json
+      description: Retrieve an asset category by its unique ID
+      parameters:
+      - description: Asset Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetAssetCategoryByIDResponse'
+      summary: Get asset category by ID
+      tags:
+      - Asset Categories
+    put:
+      consumes:
+      - application/json
+      description: Update an existing asset category by ID
+      parameters:
+      - description: Asset Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update asset category request
+        in: body
+        name: assetCategoryRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAssetCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateAssetCategoryResponse'
+      summary: Update an asset category
+      tags:
+      - Asset Categories
+  /v1/assets:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of assets with pagination and optional filters
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetAssetsResponse'
+      summary: Get list of assets
+      tags:
+      - Assets
+    post:
+      consumes:
+      - application/json
+      description: Create a new asset with the provided details
+      parameters:
+      - description: Create asset request
+        in: body
+        name: assetRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAssetRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreateAssetResponse'
+      summary: Create a new asset
+      tags:
+      - Assets
+  /v1/assets/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an asset by its unique ID
+      parameters:
+      - description: Asset ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteAssetResponse'
+      summary: Delete an asset
+      tags:
+      - Assets
+    get:
+      consumes:
+      - application/json
+      description: Retrieve an asset by its unique ID
+      parameters:
+      - description: Asset ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetAssetByIDResponse'
+      summary: Get asset by ID
+      tags:
+      - Assets
+    put:
+      consumes:
+      - application/json
+      description: Update the details of an existing asset by its ID
+      parameters:
+      - description: Asset ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update asset request
+        in: body
+        name: assetRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAssetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateAssetResponse'
+      summary: Update an existing asset
+      tags:
+      - Assets
+  /v1/assets/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Update the status of an asset by its ID
+      parameters:
+      - description: Asset ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update asset status request
+        in: body
+        name: statusRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAssetStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateAssetResponse'
+      summary: Update the status of an asset
+      tags:
+      - Assets
+  /v1/login:
+    post:
+      consumes:
+      - application/json
+      description: Login with email and password, and receive a JWT token
+      parameters:
+      - description: Login request
+        in: body
+        name: loginRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginResponse'
+      summary: Login user
+      tags:
+      - Authentication
+  /v1/maintenance-records:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve maintenance records with optional filters and pagination
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetMaintenanceRecordsResponse'
+      summary: Get a list of maintenance records
+      tags:
+      - MaintenanceRecords
+    post:
+      consumes:
+      - application/json
+      description: Create a maintenance record for an asset
+      parameters:
+      - description: Create Maintenance Record
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMaintenanceRecordRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreateMaintenanceRecordResponse'
+      summary: Create a new maintenance record
+      tags:
+      - MaintenanceRecords
+  /v1/maintenance-records/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the maintenance record identified by the ID
+      parameters:
+      - description: Maintenance Record ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteMaintenanceRecordResponse'
+      summary: Delete a maintenance record by ID
+      tags:
+      - MaintenanceRecords
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a maintenance record by its ID
+      parameters:
+      - description: Maintenance Record ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetMaintenanceRecordByIDResponse'
+      summary: Get a maintenance record by ID
+      tags:
+      - MaintenanceRecords
+    put:
+      consumes:
+      - application/json
+      description: Update the details of an existing maintenance record
+      parameters:
+      - description: Maintenance Record ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update Maintenance Record
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateMaintenanceRecordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateMaintenanceRecordResponse'
+      summary: Update an existing maintenance record
+      tags:
+      - MaintenanceRecords
+  /v1/maintenance-records/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Update the status of a specific maintenance record
+      parameters:
+      - description: Maintenance Record ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update Maintenance Record Status
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateMaintenanceRecordStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateMaintenanceRecordResponse'
+      summary: Update the status of a maintenance record
+      tags:
+      - MaintenanceRecords
+  /v1/maintenance-schedules:
+    get:
+      description: Retrieve a paginated list of maintenance schedules
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetMaintenanceSchedulesResponse'
+      summary: Get maintenance schedules
+      tags:
+      - MaintenanceSchedules
+    post:
+      consumes:
+      - application/json
+      description: Create a new maintenance schedule for a specific asset
+      parameters:
+      - description: Create Maintenance Schedule Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMaintenanceScheduleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreateMaintenanceScheduleResponse'
+      summary: Create a new maintenance schedule
+      tags:
+      - MaintenanceSchedules
+  /v1/maintenance-schedules/{id}:
+    delete:
+      description: Delete an existing maintenance schedule by its ID
+      parameters:
+      - description: Maintenance Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteMaintenanceScheduleResponse'
+      summary: Delete a maintenance schedule
+      tags:
+      - MaintenanceSchedules
+    get:
+      description: Retrieve a maintenance schedule using its ID
+      parameters:
+      - description: Maintenance Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetMaintenanceScheduleByIDResponse'
+      summary: Get a maintenance schedule by ID
+      tags:
+      - MaintenanceSchedules
+    put:
+      description: Update an existing maintenance schedule by its ID
+      parameters:
+      - description: Maintenance Schedule ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update Maintenance Schedule Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateMaintenanceScheduleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateMaintenanceScheduleResponse'
+      summary: Update a maintenance schedule
+      tags:
+      - MaintenanceSchedules
+  /v1/users:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve list of users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetUsersResponse'
+      summary: Get list of users
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with a specified role and credentials
+      parameters:
+      - description: Create User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CreateUserResponse'
+      summary: Create a new user
+      tags:
+      - Users
+  /v1/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user by their unique ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteUserResponse'
+      summary: Delete user
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      description: Retrieve user details by their unique ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetUserByIDResponse'
+      summary: Get user by ID
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update an existing user's information
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.UpdateUserResponse'
+      summary: Update user information
+      tags:
+      - Users
+swagger: "2.0"

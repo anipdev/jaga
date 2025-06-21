@@ -19,6 +19,15 @@ func NewAssetController(assetService services.AssetService) *AssetController {
 	return &AssetController{AssetService: assetService}
 }
 
+// CreateAsset godoc
+// @Summary Create a new asset
+// @Description Create a new asset with the provided details
+// @Tags Assets
+// @Accept json
+// @Produce json
+// @Param assetRequest body dto.CreateAssetRequest true "Create asset request"
+// @Success 201 {object} dto.CreateAssetResponse
+// @Router /v1/assets [post]
 func (ctrl *AssetController) CreateAsset(c *gin.Context) {
 	var req dto.CreateAssetRequest
 
@@ -60,6 +69,15 @@ func (ctrl *AssetController) CreateAsset(c *gin.Context) {
 	})
 }
 
+// GetAssetByID godoc
+// @Summary Get asset by ID
+// @Description Retrieve an asset by its unique ID
+// @Tags Assets
+// @Accept json
+// @Produce json
+// @Param id path string true "Asset ID"
+// @Success 200 {object} dto.GetAssetByIDResponse
+// @Router /v1/assets/{id} [get]
 func (ctrl *AssetController) GetAssetByID(c *gin.Context) {
 	assetID := c.Param("id")
 
@@ -98,6 +116,14 @@ func (ctrl *AssetController) GetAssetByID(c *gin.Context) {
 	})
 }
 
+// GetAssets godoc
+// @Summary Get list of assets
+// @Description Retrieve a list of assets with pagination and optional filters
+// @Tags Assets
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.GetAssetsResponse
+// @Router /v1/assets [get]
 func (ctrl *AssetController) GetAssets(c *gin.Context) {
 	var req dto.GetAssetsRequest
 
@@ -153,6 +179,16 @@ func (ctrl *AssetController) GetAssets(c *gin.Context) {
 	})
 }
 
+// UpdateAsset godoc
+// @Summary Update an existing asset
+// @Description Update the details of an existing asset by its ID
+// @Tags Assets
+// @Accept json
+// @Produce json
+// @Param id path string true "Asset ID"
+// @Param assetRequest body dto.UpdateAssetRequest true "Update asset request"
+// @Success 200 {object} dto.UpdateAssetResponse
+// @Router /v1/assets/{id} [put]
 func (ctrl *AssetController) UpdateAsset(c *gin.Context) {
 	assetID := c.Param("id")
 	var req dto.UpdateAssetRequest
@@ -193,6 +229,16 @@ func (ctrl *AssetController) UpdateAsset(c *gin.Context) {
 	})
 }
 
+// UpdateAssetStatus godoc
+// @Summary Update the status of an asset
+// @Description Update the status of an asset by its ID
+// @Tags Assets
+// @Accept json
+// @Produce json
+// @Param id path string true "Asset ID"
+// @Param statusRequest body dto.UpdateAssetStatusRequest true "Update asset status request"
+// @Success 200 {object} dto.UpdateAssetResponse
+// @Router /v1/assets/{id}/status [put]
 func (ctrl *AssetController) UpdateAssetStatus(c *gin.Context) {
 	assetID := c.Param("id")
 	var req dto.UpdateAssetStatusRequest
@@ -217,6 +263,15 @@ func (ctrl *AssetController) UpdateAssetStatus(c *gin.Context) {
 	})
 }
 
+// DeleteAsset godoc
+// @Summary Delete an asset
+// @Description Delete an asset by its unique ID
+// @Tags Assets
+// @Accept json
+// @Produce json
+// @Param id path string true "Asset ID"
+// @Success 200 {object} dto.DeleteAssetResponse
+// @Router /v1/assets/{id} [delete]
 func (ctrl *AssetController) DeleteAsset(c *gin.Context) {
 	assetID := c.Param("id")
 

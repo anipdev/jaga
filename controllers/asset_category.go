@@ -25,6 +25,15 @@ func NewAssetCategoryController(service services.AssetCategoryService) AssetCate
 	return &assetCategoryController{service: service}
 }
 
+// CreateAssetCategory godoc
+// @Summary Create a new asset category
+// @Description Create a new asset category with a specified name
+// @Tags Asset Categories
+// @Accept json
+// @Produce json
+// @Param assetCategoryRequest body dto.CreateAssetCategoryRequest true "Asset category request"
+// @Success 201 {object} dto.CreateAssetCategoryResponse
+// @Router /v1/asset-categories [post]
 func (ctrl *assetCategoryController) CreateAssetCategory(c *gin.Context) {
 	var req dto.CreateAssetCategoryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -46,6 +55,14 @@ func (ctrl *assetCategoryController) CreateAssetCategory(c *gin.Context) {
 	})
 }
 
+// GetAssetCategories godoc
+// @Summary Get list of asset categories
+// @Description Retrieve a list of asset categories
+// @Tags Asset Categories
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.GetAssetCategoriesResponse
+// @Router /v1/asset-categories [get]
 func (ctrl *assetCategoryController) GetAssetCategories(c *gin.Context) {
 
 	assetCategories, err := ctrl.service.GetAssetCategories()
@@ -68,6 +85,15 @@ func (ctrl *assetCategoryController) GetAssetCategories(c *gin.Context) {
 	})
 }
 
+// GetAssetCategoryByID godoc
+// @Summary Get asset category by ID
+// @Description Retrieve an asset category by its unique ID
+// @Tags Asset Categories
+// @Accept json
+// @Produce json
+// @Param id path string true "Asset Category ID"
+// @Success 200 {object} dto.GetAssetCategoryByIDResponse
+// @Router /v1/asset-categories/{id} [get]
 func (ctrl *assetCategoryController) GetAssetCategoryByID(c *gin.Context) {
 	id := c.Param("id")
 
@@ -91,6 +117,16 @@ func (ctrl *assetCategoryController) GetAssetCategoryByID(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// UpdateAssetCategory godoc
+// @Summary Update an asset category
+// @Description Update an existing asset category by ID
+// @Tags Asset Categories
+// @Accept json
+// @Produce json
+// @Param id path string true "Asset Category ID"
+// @Param assetCategoryRequest body dto.UpdateAssetCategoryRequest true "Update asset category request"
+// @Success 200 {object} dto.UpdateAssetCategoryResponse
+// @Router /v1/asset-categories/{id} [put]
 func (ctrl *assetCategoryController) UpdateAssetCategory(c *gin.Context) {
 	id := c.Param("id")
 	var req dto.UpdateAssetCategoryRequest
@@ -118,6 +154,15 @@ func (ctrl *assetCategoryController) UpdateAssetCategory(c *gin.Context) {
 	})
 }
 
+// DeleteAssetCategory godoc
+// @Summary Delete an asset category
+// @Description Delete an asset category by its unique ID
+// @Tags Asset Categories
+// @Accept json
+// @Produce json
+// @Param id path string true "Asset Category ID"
+// @Success 200 {object} dto.DeleteAssetCategoryResponse
+// @Router /v1/asset-categories/{id} [delete]
 func (ctrl *assetCategoryController) DeleteAssetCategory(c *gin.Context) {
 	id := c.Param("id")
 

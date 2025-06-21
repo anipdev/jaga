@@ -9,6 +9,8 @@ import (
 	"jaga/services"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func RegisterRoutes() *gin.Engine {
@@ -35,6 +37,8 @@ func RegisterRoutes() *gin.Engine {
 	maintenanceRecordRepository := repositories.NewMaintenanceRecordRepository(config.DB)
 	maintenanceRecordService := services.NewMaintenanceRecordService(maintenanceRecordRepository, assetRepository, maintenanceScheduleRepository, userRepositories)
 	maintenanceRecordController := controllers.NewMaintenanceRecordController(maintenanceRecordService)
+
+	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	v1 := r.Group("/v1")
 	{
